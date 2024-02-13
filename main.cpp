@@ -30,6 +30,11 @@ bool compareByArrivalTime(const process &p1, const process &p2)
     return p1.arrival_time < p2.arrival_time;
 }
 
+bool compareByBurstTime(const process &p1, const process &p2)
+{
+    return p1.burst_time < p2.burst_time;
+}
+
 int main()
 {
     int n;
@@ -54,6 +59,39 @@ int main()
     arr[0].completion_time = arr[0].burst_time;
     arr[0].turn_around_time = arr[0].burst_time;
     current_time = arr[0].completion_time;
+    int j;
+    for (int i = 1; i < n; i++)
+    {
+        j = i;
+        while (arr[j].arrival_time <= current_time && j < n)
+            j++;
 
-    
+        sort(arr + i, arr + j, compareByBurstTime);
+
+        if (arr[i].arrival_time > current_time)
+            arr[i].waiting_time = 0;
+        else
+            arr[i].waiting_time = current_time - arr[i].arrival_time;
+
+        arr[i].completion_time = arr[i].waiting_time + arr[i].arrival_time + arr[i].burst_time;
+        arr[i].turn_around_time = arr[i].completion_time - arr[i].arrival_time;
+        current_time = arr[i].completion_time;
+    }
+
+    float awt = 0;
+    float att = 0;
+
+    for (int i = 0; i < n; i++)
+    {
+        awt += arr[i].waiting_time;
+        att += arr[i].turn_around_time;
+    }
+
+    awt = awt / n;
+    att = att / n;
+
+    cout << "The average waiting time (AWT) is : " << awt << endl;
+    cout << "The average turnaround time (ATT) is : " << att;
+
+    return 0;
 }
